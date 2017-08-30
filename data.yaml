@@ -1,0 +1,60 @@
+extract:
+  - step: Download HTML
+    action: extract.source.http.DownloadFiles
+    fetch:
+      - 'https://en.wikipedia.org/wiki/List_of_capitals_in_the_United_States'
+
+transform:
+  - step: Set output schema
+    action: transform.schema.SetSchema
+    fields:
+      - name: State
+        type: string
+      - name: Abbr
+        type: string
+      - name: Capital
+        type: string
+      - name: Notes
+        type: string
+
+  - step: Scrape records off the page
+    action: extract.formats.html.ReadRecords
+    record_selector: table.wikitable.sortable > tr
+    extract:
+      - selector: td
+        child_index: 0
+        property: text
+        ignore_missing: yes
+      - selector: td
+        child_index: 1
+        property: text
+        ignore_missing: yes
+      - selector: td
+        child_index: 3
+        property: text
+        ignore_missing: yes
+      - selector: td
+        child_index: 9
+        property: text
+        ignore_missing: yes
+
+  - step: Convert blank strings and arbitrary whitespace to None
+    action: transform.strings.DisambiguateNulls
+    null_patterns:
+      - '^\s*$'
+
+  - step:
+    action: debug.LogValues
+
+  - step: Remove header row
+    action: transform.filter.FilterRecords
+    ignore_empty_records: yes
+
+load:
+  - step: Set table name
+    action: load.SetTableName
+    table_name: state_capitals
+
+  - step: Save locally
+    action: load.OutputCSV
+    repository: .
