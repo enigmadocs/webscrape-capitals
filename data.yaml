@@ -50,11 +50,38 @@ transform:
     action: transform.filter.FilterRecords
     ignore_empty_records: yes
 
-load:
-  - step: Set table name
-    action: load.SetTableName
-    table_name: state_capitals
+  - step:
+    action: parsekit.ApplyCodec
+    codec: newengland
+    when:
+      - record[0] in ['Connecticut', 'Maine', 'Massachusetts', 'New Hampshire', 'Rhode Island', 'Vermont']
 
-  - step: Save locally
-    action: load.OutputCSV
-    repository: .
+  - step:
+    action: parsekit.ApplyCodec
+    codec: midatlantic
+    when:
+      - record[0] in ['Delaware', 'Maryland', 'New Jersey', 'New York', 'Pennsylvania']
+
+  - step:
+    action: parsekit.ApplyCodec
+    codec: south
+    when:
+      - record[0] in ['Alabama', 'Arkansas', 'Florida', 'Georgia', 'Kentucky', 'Louisiana', 'Mississippi', 'Missouri', 'North Carolina', 'South Carolina', 'Tennessee', 'Virginia', 'West Virginia']
+
+  - step:
+    action: parsekit.ApplyCodec
+    codec: midwest
+    when:
+      - record[0] in ['Illinois', 'Indiana', 'Iowa', 'Kansas', 'Michigan', 'Minnesota', 'Nebraska', 'North Dakota', 'Ohio', 'South Dakota', 'Wisconsin']
+
+  - step:
+    action: parsekit.ApplyCodec
+    codec: southwest
+    when:
+      - record[0] in ['Arizona', 'New Mexico', 'Oklahoma', 'Texas']
+
+  - step:
+    action: parsekit.ApplyCodec
+    codec: west
+    when:
+      - record[0] in ['Alaska', 'California', 'Colorado', 'Hawaii', 'Idaho', 'Montana', 'Nevada', 'Oregon', 'Utah', 'Washington', 'Wyoming']

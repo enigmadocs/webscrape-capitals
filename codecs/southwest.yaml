@@ -1,0 +1,9 @@
+transform:
+  - step: Set table name
+    action: load.SetTableName
+    table_name: southwest
+
+  - step: Save locally
+    action: load.OutputCSV
+    repository: ./outputs
+
